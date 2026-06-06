@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    @apply text-brand-black-soft bg-brand-pearl;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3 { letter-spacing: -0.02em; }
+
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: #ECEEF5; }
+  ::-webkit-scrollbar-thumb { background: #9CA3AF; border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: #6B7280; }
+}
+
+@layer components {
+  /* ── Buttons ─────────────────────────────── */
+  .btn-primary {
+    @apply bg-brand-azure hover:bg-brand-azure-dark text-white font-semibold px-5 py-2.5 rounded-xl
+           transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed
+           flex items-center gap-2 justify-center shadow-sm;
+  }
+
+  .btn-secondary {
+    @apply bg-white hover:bg-brand-pearl text-brand-black-soft font-semibold px-5 py-2.5 rounded-xl
+           border border-gray-200 transition-all duration-200 flex items-center gap-2 justify-center;
+  }
+
+  .btn-danger {
+    @apply bg-red-600 hover:bg-red-700 text-white font-semibold px-5 py-2.5 rounded-xl
+           transition-all duration-200 flex items-center gap-2 justify-center;
+  }
+
+  .btn-gold {
+    @apply text-white font-bold px-6 py-3 rounded-xl transition-all duration-200 flex items-center gap-2 justify-center;
+    background: linear-gradient(135deg, #C9A84C, #E8C96A);
+  }
+
+  /* ── Cards ───────────────────────────────── */
+  .card {
+    @apply bg-white rounded-2xl border border-gray-100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+
+  .card-glass {
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(12px);
+    @apply rounded-2xl border border-white/10;
+  }
+
+  /* ── Form elements ───────────────────────── */
+  .input-field {
+    @apply w-full px-4 py-2.5 border border-gray-200 rounded-xl text-brand-black-soft
+           placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-azure/40
+           focus:border-brand-azure transition-all duration-200 bg-white text-sm;
+  }
+
+  .label {
+    @apply block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide;
+  }
+
+  /* ── Status badges ───────────────────────── */
+  .badge-active    { @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100; }
+  .badge-pending   { @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-100; }
+  .badge-suspended { @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-100; }
+  .badge-published { @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100; }
+  .badge-draft     { @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-500; }
+
+  /* ── Page headings ───────────────────────── */
+  .page-title    { @apply text-2xl font-bold text-brand-black-soft tracking-tight; }
+  .section-title { @apply text-base font-bold text-brand-black-soft tracking-tight; }
+  .stat-card     { @apply card p-6; }
+
+  /* ── Sidebar nav ─────────────────────────── */
+  .sidebar-nav-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-400 font-medium text-sm transition-all duration-200 cursor-pointer;
+  }
+  .sidebar-nav-item:hover  { @apply bg-white/8 text-white; }
+  .sidebar-nav-item.active { @apply bg-brand-azure text-white shadow-md; }
+
+  /* ── Data table ──────────────────────────── */
+  .data-table { @apply w-full text-sm; }
+  .data-table thead tr { @apply bg-brand-pearl border-b border-gray-100; }
+  .data-table thead th { @apply px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider; }
+  .data-table tbody tr { @apply border-b border-gray-50 hover:bg-brand-pearl/60 transition-colors; }
+  .data-table tbody td { @apply px-4 py-3.5 text-gray-700; }
+
+  /* ── Announcement body prose ─────────────── */
+  .announcement-body p  { @apply mb-3 leading-relaxed; }
+  .announcement-body ol,
+  .announcement-body ul { @apply mb-3 ml-5; }
+  .announcement-body ol { @apply list-decimal; }
+  .announcement-body ul { @apply list-disc; }
+  .announcement-body strong { @apply font-semibold text-brand-black-soft; }
+  .announcement-body a  { @apply text-brand-azure underline; }
+
+  /* ── Section divider ─────────────────────── */
+  .section-divider {
+    @apply border-t border-gray-100 my-6;
+  }
+}
+
+/* Utility: white/8 bg not in Tailwind by default */
+.bg-white\/8 { background-color: rgba(255,255,255,0.08); }
+
+/* Premium gradient text */
+.text-gradient-azure {
+  background: linear-gradient(135deg, #0077C8, #3B99E0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, #C9A84C, #E8C96A);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
