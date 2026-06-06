@@ -9,6 +9,16 @@ import LoadingSpinner from '../../components/common/LoadingSpinner';
 import { useToast } from '../../components/common/Toast';
 import { format } from 'date-fns';
 
+// Convert Cloudinary raw URL to a browser-viewable URL
+const getViewableUrl = (url) => {
+  if (!url) return '';
+  // For Cloudinary URLs, ensure inline display
+  if (url.includes('cloudinary.com') && url.includes('/raw/upload/')) {
+    return url.replace('/raw/upload/', '/raw/upload/fl_attachment:false/');
+  }
+  return url;
+};
+
 const categoryColors = {
   notes: { bg: 'bg-brand-azure-light', text: 'text-brand-azure-dark', label: 'Notes' },
   past_paper: { bg: 'bg-violet-50', text: 'text-violet-700', label: 'Past Paper' },
@@ -50,14 +60,28 @@ const ModuleDetail = () => {
     try {
       await studentAPI.logActivity({
         contentId: content._id,
-        moduleId: id,
-        action: 'download',
+        moduleId:  id,
+        action:    'download',
       });
-      // Open file in new tab for download
-      window.open(content.fileUrl, '_blank');
+
+      // Fetch the file as a blob and trigger browser download
+      // This works even with CORS-restricted URLs
+      const response = await fetch(content.fileUrl);
+      const blob     = await response.blob();
+      const url      = window.URL.createObjectURL(blob);
+      const link     = document.createElement('a');
+      link.href      = url;
+      link.download  = content.fileName || `${content.title}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
       toast.success('Download started');
     } catch (err) {
-      toast.error('Download failed');
+      // Fallback: open in new tab if fetch fails
+      window.open(content.fileUrl, '_blank');
+      toast.success('Opening PDF in new tab');
     }
   };
 
@@ -249,35 +273,37 @@ const ModuleDetail = () => {
 
       {/* PDF Viewer Modal */}
       {viewingContent && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-black/80">
-          <div className="flex items-center justify-between bg-brand-charcoal px-6 py-3">
+        <div className="fixed inset-0 z-50 flex flex-col bg-black/90">
+          {/* Header bar */}
+          <div className="flex items-center justify-between bg-brand-charcoal px-6 py-3 flex-shrink-0"
+            style={{ boxShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
             <div>
-              <p className="text-white font-medium text-sm">{viewingContent.title}</p>
-              <p className="text-gray-400 text-xs">{viewingContent.fileSizeFormatted}</p>
+              <p className="text-white font-semibold text-sm">{viewingContent.title}</p>
+              <p className="text-gray-400 text-xs mt-0.5">{viewingContent.fileName}</p>
             </div>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => handleDownload(viewingContent)}
-                className="flex items-center gap-2 px-3 py-1.5 bg-brand-azure text-white text-sm rounded-lg hover:bg-brand-azure-dark"
-              >
-                <Download className="w-4 h-4" /> Download
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-semibold transition-all"
+                style={{ background: 'linear-gradient(135deg, #0077C8, #3B99E0)' }}>
+                <Download className="w-4 h-4" /> Download PDF
               </button>
               <button
                 onClick={() => setViewingContent(null)}
-                className="text-gray-400 hover:text-white px-3 py-1.5 text-sm border border-slate-600 rounded-lg"
-              >
-                Close
+                className="text-gray-400 hover:text-white px-4 py-2 text-sm border border-gray-600 rounded-xl hover:border-gray-400 transition-colors">
+                ✕ Close
               </button>
             </div>
           </div>
-          <div className="flex-1 bg-brand-charcoal-mid flex items-center justify-center">
-            <div className="w-full h-full">
-              <iframe
-                src={viewingContent.fileUrl}
-                className="w-full h-full"
-                title={viewingContent.title}
-              />
-            </div>
+
+          {/* PDF Viewer — uses Google Docs viewer for reliable cross-browser rendering */}
+          <div className="flex-1 overflow-hidden bg-gray-800">
+            <iframe
+              src={`https://docs.google.com/viewer?url=${encodeURIComponent(getViewableUrl(viewingContent.fileUrl))}&embedded=true`}
+              className="w-full h-full border-0"
+              title={viewingContent.title}
+              allow="autoplay"
+            />
           </div>
         </div>
       )}
